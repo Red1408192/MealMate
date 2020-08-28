@@ -13,6 +13,13 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class EmptyController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public EmptyController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
@@ -24,7 +31,7 @@ namespace MealMate.Controllers
         [Route("[action]/{id:int}/{lang:int}")]
         public string Get(int id, int lang)
         {
-            
+            return "none";
         }
 
         [HttpDelete]

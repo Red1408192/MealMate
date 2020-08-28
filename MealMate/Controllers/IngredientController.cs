@@ -13,6 +13,13 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class IngredientController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public IngredientController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
@@ -23,88 +30,85 @@ namespace MealMate.Controllers
             IngredientDetail ingD = data.detail;
             IngredientProduct ingP = data.product;
 
-            using (var context = new MealMateNewContext())
+            //context.Database.= Console.Write;
+            ProductTable productTable = new ProductTable();
+            if (ingP != null)
             {
-                //context.Database.= Console.Write;
-                ProductTable productTable = new ProductTable();
-                if (ingP != null)
+                productTable = new ProductTable()
                 {
-                    productTable = new ProductTable()
-                    {
-                        ProducerId = ingP.producerId,
-                        UnitType = ingP.unitType,
-                        Quantity = ingP.quantity
-                    };
-
-                    context.Add(productTable);
-                    context.SaveChanges();
-                }
-
-                IngredientDetailTable detail = new IngredientDetailTable();
-                if (ingD != null)
-                {
-                    detail = new IngredientDetailTable()
-                    {
-                        AvgLife = ingD.averageLifeTime,
-                        UnitType = ingD.uType,
-                        SpecificWeight = ingD.specificWheight,
-                        PropWater = ingD.water,
-                        PropProtein = ingD.protein,
-                        PropFatTotal = ingD.fatTotal,
-                        PropFatSaturated = ingD.fatSaturated,
-                        PropFatUnsaturatedMono = ingD.fatUnsaturatedMono,
-                        PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli,
-                        PropCholesterol = ingD.cholesterol,
-                        PropCarbohydrate = ingD.carbohydrate,
-                        PropFiber = ingD.fiber,
-                        PropCalcium = ingD.calcium,
-                        PropIron = ingD.iron,
-                        PropPotasium = ingD.potasium,
-                        PropSodium = ingD.sodium,
-                        PropVitAIu = ingD.vitA_IU,
-                        PropVitARe = ingD.vitA_RE,
-                        PropVitB1 = ingD.vitB_1,
-                        PropVitB2 = ingD.vitB_2,
-                        PropVitB3 = ingD.vitB_3,
-                        PropVitC = ingD.vitC
-                    };
-
-                    context.Add(detail);
-                    context.SaveChanges();
-                }
-
-                Ingredient main = new Ingredient()
-                {
-                    ParentId = ingM.parentId,
-                    CreatedByUser = null, //Return here when the auth is completed
-                    ProductTableId = ingP == null ? null : (int?)productTable.ProductTableId,
-                    DetailTableId = ingD == null ? null : (int?)detail.DetailTableId
+                    ProducerId = ingP.producerId,
+                    UnitType = ingP.unitType,
+                    Quantity = ingP.quantity
                 };
-                context.Add(main);
-                context.SaveChanges();
 
-                foreach(int fla in ingM.flags)
-                {
-                    IngredientFlag ingFlag = new IngredientFlag()
-                    {
-                        IngredientId = main.IngredientId,
-                        FlagId = fla
-                    };
-                    context.Add(ingFlag);
-                    context.SaveChanges();
-                }
-
-                context.LocalizationTable
-                    .Where(a => a.ElementId == main.IngNameId && a.LanguageId == ingM.language)
-                    .FirstOrDefault().Localization = ingM.name;
-                context.LocalizationTable
-                    .Where(a => a.ElementId == main.IngDescriptionShortId && a.LanguageId == ingM.language)
-                    .FirstOrDefault().Localization = ingM.descShort;
-                context.LocalizationTable
-                    .Where(a => a.ElementId == main.IngDescriptionLongId && a.LanguageId == ingM.language)
-                    .FirstOrDefault().Localization = ingM.descLong;
+                context.Add(productTable);
                 context.SaveChanges();
             }
+
+            IngredientDetailTable detail = new IngredientDetailTable();
+            if (ingD != null)
+            {
+                detail = new IngredientDetailTable()
+                {
+                    AvgLife = ingD.averageLifeTime,
+                    UnitType = ingD.uType,
+                    SpecificWeight = ingD.specificWheight,
+                    PropWater = ingD.water,
+                    PropProtein = ingD.protein,
+                    PropFatTotal = ingD.fatTotal,
+                    PropFatSaturated = ingD.fatSaturated,
+                    PropFatUnsaturatedMono = ingD.fatUnsaturatedMono,
+                    PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli,
+                    PropCholesterol = ingD.cholesterol,
+                    PropCarbohydrate = ingD.carbohydrate,
+                    PropFiber = ingD.fiber,
+                    PropCalcium = ingD.calcium,
+                    PropIron = ingD.iron,
+                    PropPotasium = ingD.potasium,
+                    PropSodium = ingD.sodium,
+                    PropVitAIu = ingD.vitA_IU,
+                    PropVitARe = ingD.vitA_RE,
+                    PropVitB1 = ingD.vitB_1,
+                    PropVitB2 = ingD.vitB_2,
+                    PropVitB3 = ingD.vitB_3,
+                    PropVitC = ingD.vitC
+                };
+
+                context.Add(detail);
+                context.SaveChanges();
+            }
+
+            Ingredient main = new Ingredient()
+            {
+                ParentId = ingM.parentId,
+                CreatedByUser = null, //Return here when the auth is completed
+                ProductTableId = ingP == null ? null : (int?)productTable.ProductTableId,
+                DetailTableId = ingD == null ? null : (int?)detail.DetailTableId
+            };
+            context.Add(main);
+            context.SaveChanges();
+
+            foreach(int fla in ingM.flags)
+            {
+                IngredientFlag ingFlag = new IngredientFlag()
+                {
+                    IngredientId = main.IngredientId,
+                    FlagId = fla
+                };
+                context.Add(ingFlag);
+                context.SaveChanges();
+            }
+
+            context.LocalizationTable
+                .Where(a => a.ElementId == main.IngNameId && a.LanguageId == ingM.language)
+                .FirstOrDefault().Localization = ingM.name;
+            context.LocalizationTable
+                .Where(a => a.ElementId == main.IngDescriptionShortId && a.LanguageId == ingM.language)
+                .FirstOrDefault().Localization = ingM.descShort;
+            context.LocalizationTable
+                .Where(a => a.ElementId == main.IngDescriptionLongId && a.LanguageId == ingM.language)
+                .FirstOrDefault().Localization = ingM.descLong;
+            context.SaveChanges();
         }
 
         [HttpGet]
@@ -113,14 +117,12 @@ namespace MealMate.Controllers
         {
             Ingredient query;
             List<string> queryLoc = new List<string>();
-            using (var context = new MealMateNewContext())
-            {
-                query = context.Ingredient.Where(a => a.IngredientId == id).FirstOrDefault();
 
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
-            }
+            query = context.Ingredient.Where(a => a.IngredientId == id).FirstOrDefault();
+
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
 
             IngredientMain result = new IngredientMain()
             {
@@ -139,19 +141,16 @@ namespace MealMate.Controllers
         public string GetFlags(int id, int lang)
         {
             IEnumerable<string> results;
-            using (var context = new MealMateNewContext())
-            {
-                results = context.IngredientFlag
-                    .Where(a => a.IngredientId == id)
-                    .Select(c => context.LocalizationTable
-                    .Where(d => d.ElementId == context.Flag
-                    .Where(e => e.FlagId == c.FlagId).FirstOrDefault()
-                    .FlagNameId && d.LanguageId == lang).FirstOrDefault().Localization);
-            }
+            results = context.IngredientFlag
+                .Where(a => a.IngredientId == id)
+                .Select(c => context.LocalizationTable
+                .Where(d => d.ElementId == context.Flag
+                .Where(e => e.FlagId == c.FlagId).FirstOrDefault()
+                .FlagNameId && d.LanguageId == lang).FirstOrDefault().Localization);
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
-        [HttpGet]
+        [HttpGet][AllowAnonymous]
         [Route("[action]/{id:int}/{lang:int}")]
         public string GetFull(int id, int lang)
         {
@@ -160,33 +159,34 @@ namespace MealMate.Controllers
             ProductTable queryProduct;
             IEnumerable<int> flags;
 
+            IngredientMain resultMain;
+            IngredientDetail resultDet;
+            IngredientProduct resultProd;
+
             List<string> queryLoc = new List<string>();
-            using (var context = new MealMateNewContext())
+            query = context.Ingredient
+                .Where(a => a.IngredientId == id)
+                .FirstOrDefault();
+
+            flags = context.IngredientFlag
+                .Where(a => a.IngredientId == query.IngredientId)
+                .Select(b => b.FlagId);
+
+            queryDetail = context.IngredientDetailTable
+                .Where(a => a.DetailTableId == query.DetailTableId)
+                .FirstOrDefault();
+
+            queryProduct = context.ProductTable
+                .Where(a => a.ProductTableId == query.ProductTableId)
+                .FirstOrDefault();
+
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
+
+            resultMain = new IngredientMain()
             {
-                query = context.Ingredient
-                    .Where(a => a.IngredientId == id)
-                    .FirstOrDefault();
-
-                flags = context.IngredientFlag
-                    .Where(a => a.IngredientId == query.IngredientId)
-                    .Select(b => b.FlagId);
-
-                queryDetail = context.IngredientDetailTable
-                    .Where(a => a.DetailTableId == query.DetailTableId)
-                    .FirstOrDefault();
-
-                queryProduct = context.ProductTable
-                    .Where(a => a.ProductTableId == query.ProductTableId)
-                    .FirstOrDefault();
-
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
-                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
-            }
-
-            IngredientMain result = new IngredientMain()
-            {
-                parentId = (int)query.ParentId,
+                parentId = query.ParentId,
                 ingredientId = query.IngredientId,
                 language = lang,
                 name = queryLoc[0],
@@ -194,7 +194,7 @@ namespace MealMate.Controllers
                 descLong = queryLoc[2],
                 flags = flags
             };
-            IngredientDetail resultDet = new IngredientDetail()
+            resultDet = queryDetail == null ? new IngredientDetail() : new IngredientDetail()
             {
                 averageLifeTime = queryDetail.AvgLife,
                 uType = queryDetail.UnitType,
@@ -219,13 +219,18 @@ namespace MealMate.Controllers
                 vitB_3 = queryDetail.PropVitB3,
                 vitC = queryDetail.PropVitC
             };
-            IngredientProduct resultProd = new IngredientProduct()
+            resultProd = queryProduct == null ? new IngredientProduct() : new IngredientProduct()
             {
                 producerId = queryProduct.ProducerId,
                 unitType = queryProduct.UnitType,
                 quantity = (float)queryProduct.Quantity
             };
-            return JsonConvert.SerializeObject(result, Formatting.Indented);
+
+            IngredientFull result = new IngredientFull() { main = resultMain, detail = resultDet, product = resultProd };
+
+            string test = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+            return test;
         }
 
         [HttpGet]
@@ -234,30 +239,28 @@ namespace MealMate.Controllers
         {
             List<Ingredient> query = new List<Ingredient>();
             List<IngredientMain> results = new List<IngredientMain>();
-            using (var context = new MealMateNewContext())
+
+            query = context.Ingredient.ToList();
+
+            foreach (var e in query)
             {
-                query = context.Ingredient.ToList();
+                List<string> queryLoc = new List<string>();
 
-                foreach (var e in query)
+                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
+                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
+                queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
+
+                IngredientMain result = new IngredientMain()
                 {
-                    List<string> queryLoc = new List<string>();
-
-                    queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
-                    queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
-                    queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == e.IngDescriptionLongId && a.LanguageId == lang).FirstOrDefault().Localization);
-
-                    IngredientMain result = new IngredientMain()
-                    {
-                        parentId = e.ParentId,
-                        ingredientId = e.IngredientId,
-                        language = lang,
-                        name = queryLoc[0],
-                        descShort = queryLoc[1],
-                        descLong = queryLoc[2],
-                        userId = 1
-                    };
-                    results.Add(result);
-                }
+                    parentId = e.ParentId,
+                    ingredientId = e.IngredientId,
+                    language = lang,
+                    name = queryLoc[0],
+                    descShort = queryLoc[1],
+                    descLong = queryLoc[2],
+                    userId = 1
+                };
+                results.Add(result);
             }
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
@@ -268,21 +271,19 @@ namespace MealMate.Controllers
         {
             List<Ingredient> query = new List<Ingredient>();
             List<IngredientName> results = new List<IngredientName>();
-            using (var context = new MealMateNewContext())
-            {
-                query = context.Ingredient.ToList();
-                foreach (var e in query)
-                {
-                    string queryLoc;
 
-                    queryLoc = context.LocalizationTable.Where(a => a.ElementId == e.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization;
-                    IngredientName nameId = new IngredientName()
-                    {
-                        ingId = e.IngredientId,
-                        name = queryLoc
-                    };
-                    results.Add(nameId);
-                }
+            query = context.Ingredient.ToList();
+            foreach (var e in query)
+            {
+                string queryLoc;
+
+                queryLoc = context.LocalizationTable.Where(a => a.ElementId == e.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization;
+                IngredientName nameId = new IngredientName()
+                {
+                    ingId = e.IngredientId,
+                    name = queryLoc
+                };
+                results.Add(nameId);
             }
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
@@ -291,23 +292,21 @@ namespace MealMate.Controllers
         [Route("[action]/{lang:int}")]
         public string Hierarchy(int lang)
         {
-            using (var context = new MealMateNewContext())
+
+            List<Ingredient> query = context.Ingredient.ToList();
+            List<IngredientHierarchy> results = new List<IngredientHierarchy>();
+
+            foreach (var e in query)
             {
-                List<Ingredient> query = context.Ingredient.ToList();
-                List<IngredientHierarchy> results = new List<IngredientHierarchy>();
-
-                foreach (var e in query)
-                {
-                    IngredientHierarchy result = context.LocalizationTable.Where(n => (n.LanguageId == lang) && (n.ElementId == e.IngNameId)).Select(o => new IngredientHierarchy(e.IngredientId, o.Localization, e.ParentId is int ? e.ParentId : null)).FirstOrDefault();
-                    results.Add(result);
-                }
-
-                foreach (var e in results)
-                {
-                    e.addChilds(results);
-                }
-                return JsonConvert.SerializeObject(results, Formatting.Indented);
+                IngredientHierarchy result = context.LocalizationTable.Where(n => (n.LanguageId == lang) && (n.ElementId == e.IngNameId)).Select(o => new IngredientHierarchy(e.IngredientId, o.Localization, e.ParentId is int ? e.ParentId : null)).FirstOrDefault();
+                results.Add(result);
             }
+
+            foreach (var e in results)
+            {
+                e.addChilds(results);
+            }
+            return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
         [HttpPost]
@@ -317,18 +316,15 @@ namespace MealMate.Controllers
 
             NewLoc local = JsonConvert.DeserializeObject<NewLoc>(request.ToString());
 
-            using (var context = new MealMateNewContext())
-            {
-                Guid name = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngNameId;
-                Guid descShort = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngDescriptionShortId;
-                Guid desclong = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngDescriptionLongId;
+            Guid name = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngNameId;
+            Guid descShort = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngDescriptionShortId;
+            Guid desclong = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngDescriptionLongId;
 
-                context.LocalizationTable.Where(a => a.ElementId == name && a.LanguageId == lang).FirstOrDefault().Localization = local.name;
-                context.LocalizationTable.Where(a => a.ElementId == descShort && a.LanguageId == lang).FirstOrDefault().Localization = local.descShort;
-                context.LocalizationTable.Where(a => a.ElementId == desclong && a.LanguageId == lang).FirstOrDefault().Localization = local.descLong;
+            context.LocalizationTable.Where(a => a.ElementId == name && a.LanguageId == lang).FirstOrDefault().Localization = local.name;
+            context.LocalizationTable.Where(a => a.ElementId == descShort && a.LanguageId == lang).FirstOrDefault().Localization = local.descShort;
+            context.LocalizationTable.Where(a => a.ElementId == desclong && a.LanguageId == lang).FirstOrDefault().Localization = local.descLong;
 
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
 
         [HttpPost]
@@ -337,70 +333,67 @@ namespace MealMate.Controllers
         {
             IngredientDetail ingD = JsonConvert.DeserializeObject<IngredientDetail>(request.ToString());
 
-            using (var context = new MealMateNewContext())
+            if (context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().DetailTableId.HasValue)
             {
-                if (context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().DetailTableId.HasValue)
+                IngredientDetailTable DetailOld = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngredientDetailTable;
+                if (true)
                 {
-                    IngredientDetailTable DetailOld = context.Ingredient.Where(a => a.IngredientId == ingId).FirstOrDefault().IngredientDetailTable;
-                    if (true)
-                    {
-                        DetailOld.AvgLife = ingD.averageLifeTime;
-                        DetailOld.UnitType = ingD.uType;
-                        DetailOld.SpecificWeight = ingD.specificWheight;
-                        DetailOld.PropWater = ingD.water;
-                        DetailOld.PropProtein = ingD.protein;
-                        DetailOld.PropFatTotal = ingD.fatTotal;
-                        DetailOld.PropFatSaturated = ingD.fatSaturated;
-                        DetailOld.PropFatUnsaturatedMono = ingD.fatUnsaturatedMono;
-                        DetailOld.PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli;
-                        DetailOld.PropCholesterol = ingD.cholesterol;
-                        DetailOld.PropCarbohydrate = ingD.carbohydrate;
-                        DetailOld.PropFiber = ingD.fiber;
-                        DetailOld.PropCalcium = ingD.calcium;
-                        DetailOld.PropIron = ingD.iron;
-                        DetailOld.PropPotasium = ingD.potasium;
-                        DetailOld.PropSodium = ingD.sodium;
-                        DetailOld.PropVitAIu = ingD.vitA_IU;
-                        DetailOld.PropVitARe = ingD.vitA_RE;
-                        DetailOld.PropVitB1 = ingD.vitB_1;
-                        DetailOld.PropVitB2 = ingD.vitB_2;
-                        DetailOld.PropVitB3 = ingD.vitB_3;
-                        DetailOld.PropVitC = ingD.vitC;
-                    }
-
-                    context.SaveChanges();
+                    DetailOld.AvgLife = ingD.averageLifeTime;
+                    DetailOld.UnitType = ingD.uType;
+                    DetailOld.SpecificWeight = ingD.specificWheight;
+                    DetailOld.PropWater = ingD.water;
+                    DetailOld.PropProtein = ingD.protein;
+                    DetailOld.PropFatTotal = ingD.fatTotal;
+                    DetailOld.PropFatSaturated = ingD.fatSaturated;
+                    DetailOld.PropFatUnsaturatedMono = ingD.fatUnsaturatedMono;
+                    DetailOld.PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli;
+                    DetailOld.PropCholesterol = ingD.cholesterol;
+                    DetailOld.PropCarbohydrate = ingD.carbohydrate;
+                    DetailOld.PropFiber = ingD.fiber;
+                    DetailOld.PropCalcium = ingD.calcium;
+                    DetailOld.PropIron = ingD.iron;
+                    DetailOld.PropPotasium = ingD.potasium;
+                    DetailOld.PropSodium = ingD.sodium;
+                    DetailOld.PropVitAIu = ingD.vitA_IU;
+                    DetailOld.PropVitARe = ingD.vitA_RE;
+                    DetailOld.PropVitB1 = ingD.vitB_1;
+                    DetailOld.PropVitB2 = ingD.vitB_2;
+                    DetailOld.PropVitB3 = ingD.vitB_3;
+                    DetailOld.PropVitC = ingD.vitC;
                 }
-                else
+
+                context.SaveChanges();
+            }
+            else
+            {
+                IngredientDetailTable detailTable = new IngredientDetailTable()
                 {
-                    IngredientDetailTable detailTable = new IngredientDetailTable()
-                    {
-                        AvgLife = ingD.averageLifeTime,
-                        UnitType = ingD.uType,
-                        SpecificWeight = ingD.specificWheight,
-                        PropWater = ingD.water,
-                        PropProtein = ingD.protein,
-                        PropFatTotal = ingD.fatTotal,
-                        PropFatSaturated = ingD.fatSaturated,
-                        PropFatUnsaturatedMono = ingD.fatUnsaturatedMono,
-                        PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli,
-                        PropCholesterol = ingD.cholesterol,
-                        PropCarbohydrate = ingD.carbohydrate,
-                        PropFiber = ingD.fiber,
-                        PropCalcium = ingD.calcium,
-                        PropIron = ingD.iron,
-                        PropPotasium = ingD.potasium,
-                        PropSodium = ingD.sodium,
-                        PropVitAIu = ingD.vitA_IU,
-                        PropVitARe = ingD.vitA_RE,
-                        PropVitB1 = ingD.vitB_1,
-                        PropVitB2 = ingD.vitB_2,
-                        PropVitB3 = ingD.vitB_3,
-                        PropVitC = ingD.vitC
-                    };
+                    AvgLife = ingD.averageLifeTime,
+                    UnitType = ingD.uType,
+                    SpecificWeight = ingD.specificWheight,
+                    PropWater = ingD.water,
+                    PropProtein = ingD.protein,
+                    PropFatTotal = ingD.fatTotal,
+                    PropFatSaturated = ingD.fatSaturated,
+                    PropFatUnsaturatedMono = ingD.fatUnsaturatedMono,
+                    PropFatUnsaturatedPoly = ingD.fatUnsaturatedPoli,
+                    PropCholesterol = ingD.cholesterol,
+                    PropCarbohydrate = ingD.carbohydrate,
+                    PropFiber = ingD.fiber,
+                    PropCalcium = ingD.calcium,
+                    PropIron = ingD.iron,
+                    PropPotasium = ingD.potasium,
+                    PropSodium = ingD.sodium,
+                    PropVitAIu = ingD.vitA_IU,
+                    PropVitARe = ingD.vitA_RE,
+                    PropVitB1 = ingD.vitB_1,
+                    PropVitB2 = ingD.vitB_2,
+                    PropVitB3 = ingD.vitB_3,
+                    PropVitC = ingD.vitC
+                };
 
-                    context.Add(detailTable);
-                    context.SaveChanges();
-                }
+                context.Add(detailTable);
+                context.SaveChanges();
             }
         }
 
@@ -408,67 +401,109 @@ namespace MealMate.Controllers
 
         internal class IngredientMain
         {
+            [JsonProperty]
             internal int? parentId { get; set; }
+            [JsonProperty]
             internal int ingredientId { get; set; }
+            [JsonProperty]
             internal int language { get; set; }
+            [JsonProperty]
             internal string name { get; set; }
+            [JsonProperty]
             internal string descShort { get; set; }
+            [JsonProperty]
             internal string descLong { get; set; }
+            [JsonProperty]
             internal int userId { get; set; }
+            [JsonProperty]
             internal IEnumerable<int> flags { get; set; }
         }
 
         internal class IngredientDetail
         {
+            [JsonProperty]
             internal int averageLifeTime { get; set; }
+            [JsonProperty]
             internal int uType { get; set; }
+            [JsonProperty]
             internal float? specificWheight { get; set; }
+            [JsonProperty]
             internal double? water { get; set; }
+            [JsonProperty]
             internal double? protein { get; set; }
+            [JsonProperty]
             internal double? fatTotal { get; set; }
+            [JsonProperty]
             internal double? fatSaturated { get; set; }
+            [JsonProperty]
             internal double? fatUnsaturatedMono { get; set; }
+            [JsonProperty]
             internal double? fatUnsaturatedPoli { get; set; }
+            [JsonProperty]
             internal double? cholesterol { get; set; }
+            [JsonProperty]
             internal double? carbohydrate { get; set; }
+            [JsonProperty]
             internal double? fiber { get; set; }
+            [JsonProperty]
             internal double? calcium { get; set; }
+            [JsonProperty]
             internal double? iron { get; set; }
+            [JsonProperty]
             internal double? potasium { get; set; }
+            [JsonProperty]
             internal double? sodium { get; set; }
+            [JsonProperty]
             internal double? vitA_IU { get; set; }
+            [JsonProperty]
             internal double? vitA_RE { get; set; }
+            [JsonProperty]
             internal double? vitB_1 { get; set; }
+            [JsonProperty]
             internal double? vitB_2 { get; set; }
+            [JsonProperty]
             internal double? vitB_3 { get; set; }
+            [JsonProperty]
             internal double? vitC { get; set; }
         }
 
         internal class IngredientProduct
         {
+            [JsonProperty]
             internal int producerId { get; set; }
+            [JsonProperty]
             internal int unitType { get; set; }
+            [JsonProperty]
             internal float quantity { get; set; }
         }
 
         internal class IngredientFull
         {
+            [JsonProperty]
             internal IngredientMain main { get; set; }
+            [JsonProperty]
             internal IngredientDetail detail { get; set; }
+            [JsonProperty]
             internal IngredientProduct product { get; set; }
         }
 
         internal class IngredientName
         {
+            [JsonProperty]
             internal int ingId { get; set; }
+            [JsonProperty]
             internal string name { get; set; }
         }
 
         internal class IngredientHierarchy
         {
+            [JsonProperty]
             internal int id;
+            [JsonProperty]
             internal int? parent;
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal ICollection<int> childs;
 
             internal IngredientHierarchy(int ingredientId, string localization, int? parentId)
@@ -492,8 +527,11 @@ namespace MealMate.Controllers
 
         internal class NewLoc
         {
+            [JsonProperty]
             internal string name { get; set; }
+            [JsonProperty]
             internal string descShort { get; set; }
+            [JsonProperty]
             internal string descLong { get; set; }
         }
     }

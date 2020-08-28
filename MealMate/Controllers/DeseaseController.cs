@@ -12,44 +12,48 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class DeseaseController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public DeseaseController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
         {
             DeseaseToRead des = JsonConvert.DeserializeObject<DeseaseToRead>(request.ToString());
             
-            using(var context = new MealMateNewContext())
+            Desease desease = new Desease();
+            context.Add(desease);
+            context.SaveChanges();
+
+            context.LocalizationTable
+                .Where(a => a.ElementId == desease.DeseaseNameId && a.LanguageId == des.lang)
+                .FirstOrDefault().Localization = des.name;
+            context.SaveChanges();
+
+            foreach (int ing in des.ingres)
             {
-                Desease desease = new Desease();
-                context.Add(desease);
-                context.SaveChanges();
-
-                context.LocalizationTable
-                    .Where(a => a.ElementId == desease.DeseaseNameId && a.LanguageId == des.lang)
-                    .FirstOrDefault().Localization = des.name;
-                context.SaveChanges();
-
-                foreach (int ing in des.ingres)
+                DeseaseIngredientBlacklist deseaseIngredientBlacklist = new DeseaseIngredientBlacklist()
                 {
-                    DeseaseIngredientBlacklist deseaseIngredientBlacklist = new DeseaseIngredientBlacklist()
-                    {
-                        DeseaseId = desease.DeseaseId,
-                        IngredientId = ing
-                    };
-                    context.Add(deseaseIngredientBlacklist);
-                    context.SaveChanges();
-                }
+                    DeseaseId = desease.DeseaseId,
+                    IngredientId = ing
+                };
+                context.Add(deseaseIngredientBlacklist);
+                context.SaveChanges();
+            }
 
-                foreach (int fla in des.flags)
+            foreach (int fla in des.flags)
+            {
+                DeseaseFlagBlacklist deseaseFlagBlacklist = new DeseaseFlagBlacklist()
                 {
-                    DeseaseFlagBlacklist deseaseFlagBlacklist = new DeseaseFlagBlacklist()
-                    {
-                        DeseaseId = desease.DeseaseId,
-                        FlagId = fla
-                    };
-                    context.Add(deseaseFlagBlacklist);
-                    context.SaveChanges();
-                }
+                    DeseaseId = desease.DeseaseId,
+                    FlagId = fla
+                };
+                context.Add(deseaseFlagBlacklist);
+                context.SaveChanges();
             }
         }
 
@@ -61,20 +65,17 @@ namespace MealMate.Controllers
             IEnumerable<int> ing;
             IEnumerable<int> fla;
 
-            using (var context = new MealMateNewContext())
-            {
-                Desease query = context.Desease
-                    .Where(a => a.DeseaseId == id).FirstOrDefault();
+            Desease query = context.Desease
+                .Where(a => a.DeseaseId == id).FirstOrDefault();
 
-                name = context.LocalizationTable
-                    .Where(a => a.ElementId == query.DeseaseNameId && a.LanguageId == lang)
-                    .FirstOrDefault().Localization;
+            name = context.LocalizationTable
+                .Where(a => a.ElementId == query.DeseaseNameId && a.LanguageId == lang)
+                .FirstOrDefault().Localization;
 
-                ing = context.DeseaseIngredientBlacklist
-                    .Where(a => a.DeseaseId == id).Select(c => c.IngredientId);
-                fla = context.DeseaseFlagBlacklist
-                    .Where(a => a.DeseaseId == id).Select(c => c.FlagId);
-            }
+            ing = context.DeseaseIngredientBlacklist
+                .Where(a => a.DeseaseId == id).Select(c => c.IngredientId);
+            fla = context.DeseaseFlagBlacklist
+                .Where(a => a.DeseaseId == id).Select(c => c.FlagId);
 
             DeseaseToSent deseaseToSent = new DeseaseToSent()
             {
@@ -91,13 +92,11 @@ namespace MealMate.Controllers
         public string GetList(int lang)
         {
             IEnumerable<KeyValuePair<int, string>> results;
-            using (var context = new MealMateNewContext())
-            {
-                results = context.Desease.Select(a => new KeyValuePair<int, string>(a.DeseaseId,
-                    context.LocalizationTable
-                    .Where(c => c.ElementId == a.DeseaseNameId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization));
-            }
+
+            results = context.Desease.Select(a => new KeyValuePair<int, string>(a.DeseaseId,
+                context.LocalizationTable
+                .Where(c => c.ElementId == a.DeseaseNameId && c.LanguageId == lang)
+                .FirstOrDefault().Localization));
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
@@ -111,16 +110,23 @@ namespace MealMate.Controllers
         //internal-models
         internal class DeseaseToRead
         {
+            [JsonProperty]
             internal int lang;
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal IEnumerable<int> ingres;
+            [JsonProperty]
             internal IEnumerable<int> flags;
         }
 
         internal class DeseaseToSent
         {
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal IEnumerable<int> ingres;
+            [JsonProperty]
             internal IEnumerable<int> flags;
         }
     }

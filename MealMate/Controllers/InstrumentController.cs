@@ -13,29 +13,34 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class InstrumentController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public InstrumentController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
         {
             instrumnetToRead ins = JsonConvert.DeserializeObject<instrumnetToRead>(request.ToString());
 
-            using(var context = new MealMateNewContext())
-            {
-                Instrument instrument = new Instrument();
-                context.Add(instrument);
-                context.SaveChanges();
 
-                context.LocalizationTable
-                    .Where(a => a.ElementId == instrument.InsNameId && a.LanguageId == ins.language)
-                    .FirstOrDefault().Localization = ins.name;
-                context.LocalizationTable
-                    .Where(a => a.ElementId == instrument.InsDescriptionShortId && a.LanguageId == ins.language)
-                    .FirstOrDefault().Localization = ins.descShort;
-                context.LocalizationTable
-                    .Where(a => a.ElementId == instrument.InsDescriptionLongId && a.LanguageId == ins.language)
-                    .FirstOrDefault().Localization = ins.descLong;
-                context.SaveChanges();
-            }
+            Instrument instrument = new Instrument();
+            context.Add(instrument);
+            context.SaveChanges();
+
+            context.LocalizationTable
+                .Where(a => a.ElementId == instrument.InsNameId && a.LanguageId == ins.language)
+                .FirstOrDefault().Localization = ins.name;
+            context.LocalizationTable
+                .Where(a => a.ElementId == instrument.InsDescriptionShortId && a.LanguageId == ins.language)
+                .FirstOrDefault().Localization = ins.descShort;
+            context.LocalizationTable
+                .Where(a => a.ElementId == instrument.InsDescriptionLongId && a.LanguageId == ins.language)
+                .FirstOrDefault().Localization = ins.descLong;
+            context.SaveChanges();
         }
 
         [HttpGet]
@@ -45,22 +50,19 @@ namespace MealMate.Controllers
             Instrument query;
             List<string> queryLoc = new List<string>();
 
-            using(var context = new MealMateNewContext())
-            {
-                query = context.Instrument.Where(a => a.InstrumentId == id).FirstOrDefault();
+            query = context.Instrument.Where(a => a.InstrumentId == id).FirstOrDefault();
 
-                queryLoc.Add(context.LocalizationTable
-                    .Where(a => a.ElementId == query.InsNameId && a.LanguageId == lang)
-                        .FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable
+                .Where(a => a.ElementId == query.InsNameId && a.LanguageId == lang)
+                    .FirstOrDefault().Localization);
 
-                queryLoc.Add(context.LocalizationTable
-                    .Where(a => a.ElementId == query.InsDescriptionShortId && a.LanguageId == lang)
-                        .FirstOrDefault().Localization);
+            queryLoc.Add(context.LocalizationTable
+                .Where(a => a.ElementId == query.InsDescriptionShortId && a.LanguageId == lang)
+                    .FirstOrDefault().Localization);
 
-                queryLoc.Add(context.LocalizationTable
-                    .Where(a => a.ElementId == query.InsDescriptionLongId && a.LanguageId == lang)
-                        .FirstOrDefault().Localization);
-            }
+            queryLoc.Add(context.LocalizationTable
+                .Where(a => a.ElementId == query.InsDescriptionLongId && a.LanguageId == lang)
+                    .FirstOrDefault().Localization);
 
             instrumnetToRead result = new instrumnetToRead()
             {
@@ -79,28 +81,31 @@ namespace MealMate.Controllers
         {
             IEnumerable<KeyValuePair<int, string>> results;
 
-            using (var context = new MealMateNewContext())
-            {
-                results = context.Instrument
-                    .Select(a => new KeyValuePair<int, string> (a.InstrumentId,
-                    context.LocalizationTable.Where(c => c.ElementId == a.InsNameId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization));
-            }
+            results = context.Instrument
+                .Select(a => new KeyValuePair<int, string> (a.InstrumentId,
+                context.LocalizationTable.Where(c => c.ElementId == a.InsNameId && c.LanguageId == lang)
+                .FirstOrDefault().Localization));
 
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
         internal class instrumnetToRead
         {
+            [JsonProperty]
             internal int language;
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal string descShort;
+            [JsonProperty]
             internal string descLong;
         }
 
         internal class instrumentNames
         {
+            [JsonProperty]
             internal int id;
+            [JsonProperty]
             internal string name;
         }
     }

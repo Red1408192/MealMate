@@ -13,44 +13,48 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class DietController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public DietController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
         {
             DietToRead die = JsonConvert.DeserializeObject<DietToRead>(request.ToString());
 
-            using (var context = new MealMateNewContext())
+            Diet diet = new Diet();
+            context.Add(diet);
+            context.SaveChanges();
+
+            context.LocalizationTable
+                .Where(a => a.ElementId == diet.DietNameId && a.LanguageId == die.lang)
+                .FirstOrDefault().Localization = die.name;
+            context.SaveChanges();
+
+            foreach (int ing in die.ingres)
             {
-                Diet diet = new Diet();
-                context.Add(diet);
-                context.SaveChanges();
-
-                context.LocalizationTable
-                    .Where(a => a.ElementId == diet.DietNameId && a.LanguageId == die.lang)
-                    .FirstOrDefault().Localization = die.name;
-                context.SaveChanges();
-
-                foreach (int ing in die.ingres)
+                DietIngredientBlacklist dietIngredientBlacklist = new DietIngredientBlacklist()
                 {
-                    DietIngredientBlacklist dietIngredientBlacklist = new DietIngredientBlacklist()
-                    {
-                        DietId = diet.DietId,
-                        IngredientId = ing
-                    };
-                    context.Add(dietIngredientBlacklist);
-                    context.SaveChanges();
-                }
+                    DietId = diet.DietId,
+                    IngredientId = ing
+                };
+                context.Add(dietIngredientBlacklist);
+                context.SaveChanges();
+            }
 
-                foreach (int fla in die.flags)
+            foreach (int fla in die.flags)
+            {
+                DietFlagBlacklist dietFlagBlacklist = new DietFlagBlacklist()
                 {
-                    DietFlagBlacklist dietFlagBlacklist = new DietFlagBlacklist()
-                    {
-                        DietId = diet.DietId,
-                        FlagId = fla
-                    };
-                    context.Add(dietFlagBlacklist);
-                    context.SaveChanges();
-                }
+                    DietId = diet.DietId,
+                    FlagId = fla
+                };
+                context.Add(dietFlagBlacklist);
+                context.SaveChanges();
             }
         }
 
@@ -62,20 +66,17 @@ namespace MealMate.Controllers
             IEnumerable<int> ing;
             IEnumerable<int> fla;
 
-            using (var context = new MealMateNewContext())
-            {
-                Diet query = context.Diet
-                    .Where(a => a.DietId == id).FirstOrDefault();
+            Diet query = context.Diet
+                .Where(a => a.DietId == id).FirstOrDefault();
 
-                name = context.LocalizationTable
-                    .Where(a => a.ElementId == query.DietNameId && a.LanguageId == lang)
-                    .FirstOrDefault().Localization;
+            name = context.LocalizationTable
+                .Where(a => a.ElementId == query.DietNameId && a.LanguageId == lang)
+                .FirstOrDefault().Localization;
 
-                ing = context.DietIngredientBlacklist
-                    .Where(a => a.DietId == id).Select(c => c.IngredientId);
-                fla = context.DietFlagBlacklist
-                    .Where(a => a.DietId == id).Select(c => c.FlagId);
-            }
+            ing = context.DietIngredientBlacklist
+                .Where(a => a.DietId == id).Select(c => c.IngredientId);
+            fla = context.DietFlagBlacklist
+                .Where(a => a.DietId == id).Select(c => c.FlagId);
 
             DietToSent dietToSent = new DietToSent()
             {
@@ -92,13 +93,11 @@ namespace MealMate.Controllers
         public string GetList(int lang)
         {
             IEnumerable<KeyValuePair<int, string>> results;
-            using (var context = new MealMateNewContext())
-            {
-                results = context.Diet.Select(a => new KeyValuePair<int, string>(a.DietId,
-                    context.LocalizationTable
-                    .Where(c => c.ElementId == a.DietNameId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization));
-            }
+
+            results = context.Diet.Select(a => new KeyValuePair<int, string>(a.DietId,
+                context.LocalizationTable
+                .Where(c => c.ElementId == a.DietNameId && c.LanguageId == lang)
+                .FirstOrDefault().Localization));
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
@@ -112,16 +111,23 @@ namespace MealMate.Controllers
         //internal-models
         internal class DietToRead
         {
+            [JsonProperty]
             internal int lang;
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal IEnumerable<int> ingres;
+            [JsonProperty]
             internal IEnumerable<int> flags;
         }
 
         internal class DietToSent
         {
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal IEnumerable<int> ingres;
+            [JsonProperty]
             internal IEnumerable<int> flags;
         }
     }

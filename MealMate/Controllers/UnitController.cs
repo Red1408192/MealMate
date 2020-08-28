@@ -11,17 +11,22 @@ using MealMate.Data;
 namespace MealMate.Controllers
 {
     [Route("[Controller]")]
-    public class Unit : ControllerBase
+    public class UnitController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public UnitController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpGet]
         [Route("[action]/")]
         public string GetList() //DO NOT USE THIS ONE
         {
-            List<UnitType> query = new List<UnitType>();
-            using (var context = new MealMateNewContext())
-            {
-                query = context.UnitType.ToList();
-            }
+            IEnumerable<UnitType> query = new List<UnitType>();
+
+            query = context.UnitType.ToList();
             return JsonConvert.SerializeObject(query, Formatting.Indented);
         }
     }

@@ -12,22 +12,26 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class ProducerController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public ProducerController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
         {
             ProducerToSend prod = JsonConvert.DeserializeObject<ProducerToSend>(request.ToString());
 
-            using(var context = new MealMateNewContext())
+            Producer producer = new Producer()
             {
-                Producer producer = new Producer()
-                {
-                    BrandName = prod.name,
-                    MainCountry = prod.Country
-                };
-                context.Add(producer);
-                context.SaveChanges();
-            }
+                BrandName = prod.name,
+                MainCountry = prod.Country
+            };
+            context.Add(producer);
+            context.SaveChanges();
         }
 
         [HttpGet]
@@ -35,17 +39,17 @@ namespace MealMate.Controllers
         public string GetList()
         {
             IEnumerable<KeyValuePair<int, string>> query;
-            using (var context = new MealMateNewContext())
-            {
-                query = context.Producer.Select(a =>
-                new KeyValuePair<int, string>(a.BrandId, a.BrandName));
-            }
+
+            query = context.Producer.Select(a =>
+            new KeyValuePair<int, string>(a.BrandId, a.BrandName));
             return JsonConvert.SerializeObject(query, Formatting.Indented);
         }
 
         internal class ProducerToSend
         {
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal int? Country;
         }
     }

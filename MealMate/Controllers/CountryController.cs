@@ -15,6 +15,13 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class CountryController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public CountryController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
@@ -27,10 +34,7 @@ namespace MealMate.Controllers
         public string Get(int id)
         {
             Country query;
-            using(var context = new MealMateNewContext())
-            {
-                query = context.Country.Where(a => a.CountryId == id).FirstOrDefault();
-            }
+            query = context.Country.Where(a => a.CountryId == id).FirstOrDefault();
 
             CountryToSent result = new CountryToSent()
             {
@@ -49,19 +53,21 @@ namespace MealMate.Controllers
         public string GetList()
         {
             IEnumerable<KeyValuePair<int, string>> results;
-            using( var context = new MealMateNewContext())
-            {
-                results = context.Country.Select(a => new KeyValuePair<int, string>(a.CountryId, a.CountryName));
-            }
+            results = context.Country.Select(a => new KeyValuePair<int, string>(a.CountryId, a.CountryName));
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
         internal class CountryToSent
         {
+            [JsonProperty]
             internal int CountryId { get; set; }
+            [JsonProperty]
             internal string CountryName { get; set; }
+            [JsonProperty]
             internal string Iso { get; set; }
+            [JsonProperty]
             internal int DefLanguage { get; set; }
+            [JsonProperty]
             internal int DefCulture { get; set; }
         }
     }

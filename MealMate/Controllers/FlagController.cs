@@ -13,27 +13,31 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class FlagController : ControllerBase
     {
+        MealMateNewContext context;
+
+        public FlagController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)
         {
             FlagToPost flag = JsonConvert.DeserializeObject<FlagToPost>(request.ToString());
 
-            using(var context = new MealMateNewContext())
-            {
-                Flag flag1 = new Flag();
+            Flag flag1 = new Flag();
 
-                context.Add(flag1);
-                context.SaveChanges();
+            context.Add(flag1);
+            context.SaveChanges();
 
-                context.LocalizationTable
-                    .Where(a => a.ElementId == flag1.FlagNameId && a.LanguageId == flag.lang)
-                    .FirstOrDefault().Localization = flag.name;
-                context.LocalizationTable
-                    .Where(a => a.ElementId == flag1.FlagDescriptionId && a.LanguageId == flag.lang)
-                    .FirstOrDefault().Localization = flag.description;
-                context.SaveChanges();
-            }
+            context.LocalizationTable
+                .Where(a => a.ElementId == flag1.FlagNameId && a.LanguageId == flag.lang)
+                .FirstOrDefault().Localization = flag.name;
+            context.LocalizationTable
+                .Where(a => a.ElementId == flag1.FlagDescriptionId && a.LanguageId == flag.lang)
+                .FirstOrDefault().Localization = flag.description;
+            context.SaveChanges();
         }
 
         [HttpGet]
@@ -41,22 +45,21 @@ namespace MealMate.Controllers
         public string Get(int id, int lang)
         {
             KeyValuePair<string, string> result;
-            using (var context = new MealMateNewContext())
-            {
-                Flag query = context.Flag
-                    .Where(a => a.FlagId == id)
-                    .FirstOrDefault();
 
-                var name = context.LocalizationTable
-                    .Where(c => c.ElementId == query.FlagNameId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization;
+            Flag query = context.Flag
+                .Where(a => a.FlagId == id)
+                .FirstOrDefault();
 
-                var desc = context.LocalizationTable
-                    .Where(c => c.ElementId == query.FlagDescriptionId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization;
+            var name = context.LocalizationTable
+                .Where(c => c.ElementId == query.FlagNameId && c.LanguageId == lang)
+                .FirstOrDefault().Localization;
 
-                result = new KeyValuePair<string, string>(name, desc);
-            };
+            var desc = context.LocalizationTable
+                .Where(c => c.ElementId == query.FlagDescriptionId && c.LanguageId == lang)
+                .FirstOrDefault().Localization;
+
+            result = new KeyValuePair<string, string>(name, desc);
+
             return JsonConvert.SerializeObject(result, Formatting.Indented);
         }
 
@@ -65,14 +68,12 @@ namespace MealMate.Controllers
         public string GetList(int lang)
         {
             IEnumerable<KeyValuePair<int, string>> results;
-            using (var context = new MealMateNewContext())
-            {
-                results = context.Flag
-                    .Select(a => new KeyValuePair<int, string>(a.FlagId,
-                    context.LocalizationTable
-                    .Where(c => c.ElementId == a.FlagNameId && c.LanguageId == lang)
-                    .FirstOrDefault().Localization));
-            }
+
+            results = context.Flag
+                .Select(a => new KeyValuePair<int, string>(a.FlagId,
+                context.LocalizationTable
+                .Where(c => c.ElementId == a.FlagNameId && c.LanguageId == lang)
+                .FirstOrDefault().Localization));
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
@@ -87,8 +88,11 @@ namespace MealMate.Controllers
 
         internal class FlagToPost
         {
+            [JsonProperty]
             internal int lang;
+            [JsonProperty]
             internal string name;
+            [JsonProperty]
             internal string description;
         }
     }
