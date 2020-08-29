@@ -14,6 +14,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace MealMate
 {
+//      “Victory is for those who can say 'Victory is mine'.
+//          Success is for those who can begin saying 'I will succeed'
+//              and then say 'I have succeeded' in the very end.”
+//                  - Atatürk
     public class Startup
     {
         public Startup(IConfiguration configuration)

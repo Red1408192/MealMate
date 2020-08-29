@@ -150,7 +150,7 @@ namespace MealMate.Controllers
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
-        [HttpGet][AllowAnonymous]
+        [HttpGet]
         [Route("[action]/{id:int}/{lang:int}")]
         public string GetFull(int id, int lang)
         {
