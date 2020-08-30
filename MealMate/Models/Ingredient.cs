@@ -16,11 +16,9 @@ namespace MealMate.Models
         public Guid IngNameId { get; set; }
         public Guid IngDescriptionShortId { get; set; }
         public Guid IngDescriptionLongId { get; set; }
-        public int? CreatedByUser { get; set; }
         public int? DetailTableId { get; set; }
         public int? ProductTableId { get; set; }
 
-        public virtual User CreatedByUserNavigation { get; set; }
         public virtual Ingredient Parent { get; set; }
         public virtual ProductTable ProductTable { get; set; }
         public virtual IngredientDetailTable IngredientDetailTable { get; set; }

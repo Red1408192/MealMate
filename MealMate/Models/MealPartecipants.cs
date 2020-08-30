@@ -10,6 +10,5 @@ namespace MealMate.Models
         public int FamilyMemberId { get; set; }
 
         public virtual Meal Meal { get; set; }
-        public virtual User User { get; set; }
     }
 }

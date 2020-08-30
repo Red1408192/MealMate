@@ -8,5 +8,6 @@ namespace MealMate.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        
     }
 }

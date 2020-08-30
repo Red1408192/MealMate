@@ -23,7 +23,6 @@ namespace MealMate.Models
         public short? TotalTimeWait { get; set; }
         public int? CultureId { get; set; }
 
-        public virtual User CreatedByUserNavigation { get; set; }
         public virtual Culture Culture { get; set; }
         public virtual ICollection<RecipeRating> RecipeRating { get; set; }
         public virtual ICollection<RecipeStep> RecipeStep { get; set; }

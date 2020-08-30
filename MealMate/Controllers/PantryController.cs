@@ -46,7 +46,7 @@ namespace MealMate.Controllers
         {
             [JsonProperty]
             internal string user { get; set; }
-            internal int 
+            internal int tryd;
         }
     }
 }

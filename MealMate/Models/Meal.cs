@@ -9,7 +9,5 @@ namespace MealMate.Models
         public int UserId { get; set; }
         public DateTime PlanedFor { get; set; }
         public int Daybanch { get; set; }
-
-        public virtual User User { get; set; }
     }
 }

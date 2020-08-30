@@ -1,19 +1,20 @@
-﻿using System;
+﻿ using System;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MealMate.Models;
 using Action = MealMate.Models.Action;
+using Microsoft.AspNetCore.Identity;
 
 namespace MealMate.Data
 {
-    public partial class MealMateNewContext : DbContext
+    public partial class MealMateNewContext : ApiAuthorizationDbContext<ApplicationUser>
     {
-        public MealMateNewContext()
-        {
-        }
-
-        public MealMateNewContext(DbContextOptions<MealMateNewContext> options)
-            : base(options)
+        public MealMateNewContext(
+            DbContextOptions options,
+            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
 
@@ -23,6 +24,7 @@ namespace MealMate.Data
         public virtual DbSet<Desease> Desease { get; set; }
         public virtual DbSet<DeseaseFlagBlacklist> DeseaseFlagBlacklist { get; set; }
         public virtual DbSet<DeseaseIngredientBlacklist> DeseaseIngredientBlacklist { get; set; }
+        public virtual DbSet<DeviceCodes> DeviceCodes { get; set; }
         public virtual DbSet<Diet> Diet { get; set; }
         public virtual DbSet<DietFlagBlacklist> DietFlagBlacklist { get; set; }
         public virtual DbSet<DietIngredientBlacklist> DietIngredientBlacklist { get; set; }
@@ -57,7 +59,6 @@ namespace MealMate.Data
         public virtual DbSet<ShoppingList> ShoppingList { get; set; }
         public virtual DbSet<ShoppingListElement> ShoppingListElement { get; set; }
         public virtual DbSet<UnitType> UnitType { get; set; }
-        public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserFamily> UserFamily { get; set; }
         public virtual DbSet<UserFamilyDesease> UserFamilyDesease { get; set; }
         public virtual DbSet<UserFamilyDiet> UserFamilyDiet { get; set; }
@@ -75,6 +76,9 @@ namespace MealMate.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<IdentityUser>().ToTable("user");
+
             modelBuilder.Entity<Action>(entity =>
             {
                 entity.ToTable("action");
@@ -198,6 +202,30 @@ namespace MealMate.Data
                     .HasConstraintName("FK_desease_ingredient_blacklist_ingredient");
             });
 
+            modelBuilder.Entity<DeviceCodes>(entity =>
+            {
+                entity.HasKey(e => e.UserCode);
+
+                entity.HasIndex(e => e.DeviceCode)
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Expiration);
+
+                entity.Property(e => e.UserCode).HasMaxLength(200);
+
+                entity.Property(e => e.ClientId)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Data).IsRequired();
+
+                entity.Property(e => e.DeviceCode)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.SubjectId).HasMaxLength(200);
+            });
+
             modelBuilder.Entity<Diet>(entity =>
             {
                 entity.ToTable("diet");
@@ -278,10 +306,6 @@ namespace MealMate.Data
 
                 entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
 
-                entity.Property(e => e.CreatedByUser)
-                    .HasColumnName("created_by_user")
-                    .HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.DetailTableId).HasColumnName("detail_table_id");
 
                 entity.Property(e => e.IngDescriptionLongId)
@@ -301,11 +325,6 @@ namespace MealMate.Data
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.ProductTableId).HasColumnName("product_table_id");
-
-                entity.HasOne(d => d.CreatedByUserNavigation)
-                    .WithMany(p => p.Ingredient)
-                    .HasForeignKey(d => d.CreatedByUser)
-                    .HasConstraintName("FK_ingredient_user");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)
@@ -499,12 +518,6 @@ namespace MealMate.Data
                     .HasColumnType("date");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Meal)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_meal_user");
             });
 
             modelBuilder.Entity<MealPartecipants>(entity =>
@@ -524,12 +537,6 @@ namespace MealMate.Data
                     .HasForeignKey(d => d.MealId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_meal_partecipants_meal");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_meal_partecipants_user");
             });
 
             modelBuilder.Entity<MealRecipes>(entity =>
@@ -565,7 +572,10 @@ namespace MealMate.Data
 
                 entity.Property(e => e.PantryId).HasColumnName("pantry_id");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Pantry)
@@ -759,12 +769,6 @@ namespace MealMate.Data
 
                 entity.Property(e => e.TotalTimeWait).HasColumnName("total_time_wait");
 
-                entity.HasOne(d => d.CreatedByUserNavigation)
-                    .WithMany(p => p.Recipe)
-                    .HasForeignKey(d => d.CreatedByUser)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_recipe_user");
-
                 entity.HasOne(d => d.Culture)
                     .WithMany(p => p.Recipe)
                     .HasForeignKey(d => d.CultureId)
@@ -822,12 +826,6 @@ namespace MealMate.Data
                     .HasForeignKey(d => d.RecipeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_recipe_rating_recipe");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.RecipeRating)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_recipe_rating_user");
             });
 
             modelBuilder.Entity<RecipeSimpleIngredients>(entity =>
@@ -1028,12 +1026,6 @@ namespace MealMate.Data
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ShoppingList)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_shopping_list_user");
             });
 
             modelBuilder.Entity<ShoppingListElement>(entity =>
@@ -1080,43 +1072,6 @@ namespace MealMate.Data
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.ToTable("user");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.Property(e => e.CreationAtDate)
-                    .HasColumnName("creation_atDate")
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.SettingDefaultLocation).HasColumnName("setting_defaultLocation");
-
-                entity.Property(e => e.SettingIsPublic).HasColumnName("setting_isPublic");
-
-                entity.Property(e => e.SettingLanguageId)
-                    .HasColumnName("setting_language_id")
-                    .HasDefaultValueSql("((1))");
-
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasColumnName("username")
-                    .HasMaxLength(30)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.SettingDefaultLocationNavigation)
-                    .WithMany(p => p.User)
-                    .HasForeignKey(d => d.SettingDefaultLocation)
-                    .HasConstraintName("FK_user_locations");
-
-                entity.HasOne(d => d.SettingLanguage)
-                    .WithMany(p => p.User)
-                    .HasForeignKey(d => d.SettingLanguageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_user_language");
-            });
-
             modelBuilder.Entity<UserFamily>(entity =>
             {
                 entity.HasKey(e => e.FamilyMember);
@@ -1140,7 +1095,9 @@ namespace MealMate.Data
                     .HasMaxLength(20)
                     .IsFixedLength();
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.Culture)
                     .WithMany(p => p.UserFamily)
@@ -1151,7 +1108,6 @@ namespace MealMate.Data
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserFamily)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_user_family_user");
             });
 
@@ -1276,7 +1232,10 @@ namespace MealMate.Data
 
                 entity.Property(e => e.NoPantry).HasColumnName("no_pantry");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.Language)
                     .WithMany()
@@ -1290,6 +1249,7 @@ namespace MealMate.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_user_settings_user");
             });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

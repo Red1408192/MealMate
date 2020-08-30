@@ -34,15 +34,11 @@ namespace MealMate
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MMDefaultConnection")));
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("AuthDefaultConnection")));
-
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<MealMateNewContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, MealMateNewContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

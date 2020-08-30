@@ -12,6 +12,5 @@ namespace MealMate.Models
         public string Comment { get; set; }
 
         public virtual Recipe Recipe { get; set; }
-        public virtual User User { get; set; }
     }
 }

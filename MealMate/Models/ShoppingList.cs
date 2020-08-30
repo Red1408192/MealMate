@@ -9,7 +9,5 @@ namespace MealMate.Models
         public int UserId { get; set; }
         public DateTime CreatedAtDate { get; set; }
         public DateTime? CompletedAtDate { get; set; }
-
-        public virtual User User { get; set; }
     }
 }
