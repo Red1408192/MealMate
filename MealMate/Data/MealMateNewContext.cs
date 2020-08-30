@@ -24,7 +24,6 @@ namespace MealMate.Data
         public virtual DbSet<Desease> Desease { get; set; }
         public virtual DbSet<DeseaseFlagBlacklist> DeseaseFlagBlacklist { get; set; }
         public virtual DbSet<DeseaseIngredientBlacklist> DeseaseIngredientBlacklist { get; set; }
-        public virtual DbSet<DeviceCodes> DeviceCodes { get; set; }
         public virtual DbSet<Diet> Diet { get; set; }
         public virtual DbSet<DietFlagBlacklist> DietFlagBlacklist { get; set; }
         public virtual DbSet<DietIngredientBlacklist> DietIngredientBlacklist { get; set; }
@@ -77,7 +76,40 @@ namespace MealMate.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<IdentityUser>().ToTable("user");
+            //modelBuilder.Entity<IdentityUser>().ToTable("user");
+            
+            
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.ToTable("user");
+                entity.Property(e => e.CreationAtDate)
+                .HasColumnName("created_at")
+                .HasDefaultValueSql("(getDate())");
+            });
+            modelBuilder.Entity<UserClaims>(entity =>
+            {
+                entity.ToTable("UserClaims");
+            });
+            modelBuilder.Entity<UserTokens>(entity =>
+            {
+                entity.ToTable("UserTokens");
+            });
+            modelBuilder.Entity<UserLogins>(entity =>
+            {
+                entity.ToTable("UserLogins");
+            });
+            modelBuilder.Entity<UserRoles>(entity =>
+            {
+                entity.ToTable("UserRoles");
+            });
+            modelBuilder.Entity<Roles>(entity =>
+            {
+                entity.ToTable("Roles");
+            });
+            modelBuilder.Entity<RoleClaims>(entity =>
+            {
+                entity.ToTable("RoleClaims");
+            });
 
             modelBuilder.Entity<Action>(entity =>
             {
@@ -200,30 +232,6 @@ namespace MealMate.Data
                     .HasForeignKey(d => d.IngredientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_desease_ingredient_blacklist_ingredient");
-            });
-
-            modelBuilder.Entity<DeviceCodes>(entity =>
-            {
-                entity.HasKey(e => e.UserCode);
-
-                entity.HasIndex(e => e.DeviceCode)
-                    .IsUnique();
-
-                entity.HasIndex(e => e.Expiration);
-
-                entity.Property(e => e.UserCode).HasMaxLength(200);
-
-                entity.Property(e => e.ClientId)
-                    .IsRequired()
-                    .HasMaxLength(200);
-
-                entity.Property(e => e.Data).IsRequired();
-
-                entity.Property(e => e.DeviceCode)
-                    .IsRequired()
-                    .HasMaxLength(200);
-
-                entity.Property(e => e.SubjectId).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Diet>(entity =>

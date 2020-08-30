@@ -15,6 +15,6 @@ namespace MealMate.Models
         public string UserId { get; set; }
 
         public virtual Language Language { get; set; }
-        public virtual IdentityUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

@@ -4,12 +4,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MealMate.Models
 {
-    public partial class UserRoles
+    public partial class UserRoles : IdentityUserRole<string>
     {
-        public string UserId { get; set; }
-        public string RoleId { get; set; }
-
         public virtual Roles Role { get; set; }
-        public virtual IdentityUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

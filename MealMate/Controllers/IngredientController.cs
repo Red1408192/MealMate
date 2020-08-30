@@ -81,7 +81,6 @@ namespace MealMate.Controllers
             Ingredient main = new Ingredient()
             {
                 ParentId = ingM.parentId,
-                CreatedByUser = null, //Return here when the auth is completed
                 ProductTableId = ingP == null ? null : (int?)productTable.ProductTableId,
                 DetailTableId = ingD == null ? null : (int?)detail.DetailTableId
             };

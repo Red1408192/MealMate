@@ -14,6 +14,6 @@ namespace MealMate.Models
         public string UserId { get; set; }
 
         public virtual Culture Culture { get; set; }
-        public virtual IdentityUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }
