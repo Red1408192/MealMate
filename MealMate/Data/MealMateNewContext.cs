@@ -630,7 +630,8 @@ namespace MealMate.Data
                     .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(30)
-                    .IsFixedLength();
+                    .IsFixedLength()
+                    .HasDefaultValue("newOverCard");
 
                 entity.Property(e => e.PantryId).HasColumnName("pantry_id");
 

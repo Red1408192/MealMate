@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace MealMate.Controllers
 {
-    [Authorize] //[AllowAnonymous]
+    [AllowAnonymous] //[AllowAnonymous]
     [Route("[controller]")]
     public class PantryController : ControllerBase
     {
@@ -24,14 +24,36 @@ namespace MealMate.Controllers
         [Route("[action]")]
         public void AddIngredient([FromBody] object request)
         {
-            //JsonConvert.DeserializeObject<TTTT>(request.ToString());
+            IngredientToAdd ingAdd = JsonConvert.DeserializeObject<IngredientToAdd>(request.ToString());
+            if (ingAdd.overCardId == null)
+            {
+                PantryOvercard OC = new PantryOvercard();
+                context.Add(OC);
+                context.SaveChanges();
+                ingAdd.overCardId = OC.PantryOvercardId;
+            }
+
+            PantryIngredient ing = new PantryIngredient()
+            {
+                PantryOcId = (int)ingAdd.overCardId,
+                IngredientId = ingAdd.ingredientId,
+                Quantity = ingAdd.quantity
+            };
+            context.Add(ing);
+            context.SaveChanges();
         }
 
         [HttpGet]
-        [Route("[action]/{id:int}/{lang:int}")]
-        public string Get(int id, int lang)
+        [Route("[action]/{lang:int}")]
+        public string Get(int lang)
         {
-            return "none";
+            var user = this.User.Claims.ToList()[5].Value;
+
+            IEnumerable<PantryOvercard> Currentpantry = context.Pantry.Where(a => a.UserId == user).FirstOrDefault().PantryOvercard;
+
+            PantryToSent normPantry = new PantryToSent(Currentpantry, context, lang);
+
+            return JsonConvert.SerializeObject(normPantry, Formatting.Indented);
         }
 
         [HttpDelete]
@@ -45,8 +67,47 @@ namespace MealMate.Controllers
         internal class IngredientToAdd
         {
             [JsonProperty]
-            internal string user { get; set; }
-            internal int tryd { get; set; }
+            internal int? overCardId { get; set; }
+            [JsonProperty]
+            internal int ingredientId { get; set; }
+            [JsonProperty]
+            internal double quantity { get; set; }
+        }
+        internal class PantryToSent
+        {
+            internal IEnumerable<OverCard> OverCards { get; set; }
+            internal class OverCard
+            {
+                internal string OvercardName { get; set; }
+                private IEnumerable<OCIngredient> ingedrients {get; set;}
+
+                internal class OCIngredient
+                {
+                    internal string name { get; set; }
+                    internal double quantity { get; set; }
+
+                    internal OCIngredient(string n, double q)
+                    {
+                        name = n;
+                        quantity = q; //I can explain, i swear
+                    }
+                }
+                internal OverCard(IEnumerable<PantryIngredient> Ingre, PantryOvercard pOC, MealMateNewContext context, int lang)
+                {
+                    OvercardName = pOC.Name;
+                    ingedrients = Ingre.Select(a => new OCIngredient(context.LocalizationTable
+                                                                            .Where(c => c.ElementId == context
+                                                                            .Ingredient.Where(b => b.IngredientId == a.IngredientId)
+                                                                            .FirstOrDefault()
+                                                                            .IngNameId && c.LanguageId == lang)
+                                                                            .FirstOrDefault().Localization, a.Quantity));
+                }
+            }
+            internal PantryToSent(IEnumerable<PantryOvercard> pantry, MealMateNewContext context, int lang)
+            {
+                OverCards = pantry.Select(a => new OverCard(context.PantryIngredient
+                    .Where(b => b.PantryOcId == a.PantryId), a, context, lang));
+            }
         }
     }
 }

@@ -151,46 +151,97 @@ namespace MealMate.Controllers
         [HttpPost]
         [Authorize()] //need to lock the requester to the user
         [Route("[action]")]
-        public void SetDiet([FromBody] object request)
+        public void AddDesease([FromBody] object request)
         {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
 
-             settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
-            
-            switch (mod.setModind)
-            {
-                case 0:
-                    UserFamilyDesease res0 = new UserFamilyDesease() {DeseaseId = mod.ElemenId, UserFamilyMemberId = mod.famMemberId };
-                    context.Add(res0);
-                    break;
-                case 1:
-                    UserFamilyDiet res1 = new UserFamilyDiet() { DietId = mod.ElemenId, UserFamilyMemberId = mod.famMemberId };
-                    context.Add(res1);
-                    break;
-                case 2:
-                    UserFamilyDietIngr res2 = new UserFamilyDietIngr() { IngredientId = mod.ElemenId, FamilyMemberId = mod.famMemberId };
-                    context.Add(res2);
-                    break;
-                case 3:
-                    UserFamilyDietFlag res3 = new UserFamilyDietFlag() { FlagId = mod.ElemenId, FamilyMemberId = mod.famMemberId };
-                    context.Add(res3);
-                    break;
-                case 4:
-                    UserFamilyDesease res4 = context.UserFamilyDesease.Where(a => a.UserFamilyMemberId == mod.famMemberId && a.DeseaseId == mod.ElemenId).FirstOrDefault();
-                    context.Remove(res4);
-                    break;
-                case 5:
-                    UserFamilyDiet res5 = context.UserFamilyDiet.Where(a => a.UserFamilyMemberId == mod.famMemberId && a.DietId == mod.ElemenId).FirstOrDefault();
-                    context.Remove(res5);
-                    break;
-                case 6:
-                    UserFamilyDietIngr res6 = context.UserFamilyDietIngr.Where(a => a.FamilyMemberId == mod.famMemberId && a.IngredientId == mod.ElemenId).FirstOrDefault();
-                    context.Remove(res6);
-                    break;
-                case 7:
-                    UserFamilyDietFlag res7 = context.UserFamilyDietFlag.Where(a => a.FamilyMemberId == mod.famMemberId && a.FlagId == mod.ElemenId).FirstOrDefault();
-                    context.Remove(res7);
-                    break;
-            }
+            UserFamilyDesease res = new UserFamilyDesease() { DeseaseId = mod.ElemenId, UserFamilyMemberId = mod.famMemberId };
+            context.Add(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void AddDiet([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDiet res = new UserFamilyDiet() { DietId = mod.ElemenId, UserFamilyMemberId = mod.famMemberId };
+            context.Add(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void AddIngredientToBL([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDietIngr res = new UserFamilyDietIngr() { IngredientId = mod.ElemenId, FamilyMemberId = mod.famMemberId };
+            context.Add(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void AddFlagToBL([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDietFlag res = new UserFamilyDietFlag() { FlagId = mod.ElemenId, FamilyMemberId = mod.famMemberId };
+            context.Add(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void RemoveDesease([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDesease res = context.UserFamilyDesease.Where(a => a.UserFamilyMemberId == mod.famMemberId && a.DeseaseId == mod.ElemenId).FirstOrDefault();
+            context.Remove(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void RemoveDiet([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDiet res = context.UserFamilyDiet.Where(a => a.UserFamilyMemberId == mod.famMemberId && a.DietId == mod.ElemenId).FirstOrDefault();
+            context.Remove(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void RemoveIngreFrBL([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDietIngr res = context.UserFamilyDietIngr.Where(a => a.FamilyMemberId == mod.famMemberId && a.IngredientId == mod.ElemenId).FirstOrDefault();
+            context.Remove(res);
+            context.SaveChanges();
+        }
+
+        [HttpPost]
+        [Authorize()] //need to lock the requester to the user
+        [Route("[action]")]
+        public void RemoveFlagFrBL([FromBody] object request)
+        {
+            settingModification mod = JsonConvert.DeserializeObject<settingModification>(request.ToString());
+
+            UserFamilyDietFlag res = context.UserFamilyDietFlag.Where(a => a.FamilyMemberId == mod.famMemberId && a.FlagId == mod.ElemenId).FirstOrDefault();
+            context.Remove(res);
+            context.SaveChanges();
         }
 
         [HttpDelete]
@@ -251,9 +302,6 @@ namespace MealMate.Controllers
 
         internal class settingModification
         {
-            [JsonProperty]
-            internal int setModind { get; set; } // 0 - add desease; 1 - add diet; 2 - add flag to black list; 3 - add ingredient to black list
-                                                 // 4 - remove desease; 5 - remove diet: 6 - remove flag From black list, 7 - remove ingredient From black list
             [JsonProperty]
             internal int famMemberId { get; set; }
             [JsonProperty]
