@@ -116,8 +116,9 @@ namespace MealMate.Controllers
         {
             Ingredient query;
             List<string> queryLoc = new List<string>();
-
             query = context.Ingredient.Where(a => a.IngredientId == id).FirstOrDefault();
+
+            var tokenID = this.HttpContext.User.Claims.ToList()[5].Value;
 
             queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngNameId && a.LanguageId == lang).FirstOrDefault().Localization);
             queryLoc.Add(context.LocalizationTable.Where(a => a.ElementId == query.IngDescriptionShortId && a.LanguageId == lang).FirstOrDefault().Localization);
@@ -503,7 +504,7 @@ namespace MealMate.Controllers
             [JsonProperty]
             internal string name;
             [JsonProperty]
-            internal ICollection<int> childs;
+            internal ICollection<int> childs { get; set; }
 
             internal IngredientHierarchy(int ingredientId, string localization, int? parentId)
             {

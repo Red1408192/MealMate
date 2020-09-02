@@ -89,11 +89,11 @@ namespace MealMate.Controllers
         internal class FlagToPost
         {
             [JsonProperty]
-            internal int lang;
+            internal int lang { get; set; }
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
             [JsonProperty]
-            internal string description;
+            internal string description { get; set; }
         }
     }
 }

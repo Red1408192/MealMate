@@ -48,9 +48,9 @@ namespace MealMate.Controllers
         internal class ProducerToSend
         {
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
             [JsonProperty]
-            internal int? Country;
+            internal int? Country { get; set; }
         }
     }
 }

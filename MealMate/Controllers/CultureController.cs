@@ -51,11 +51,11 @@ namespace MealMate.Controllers
         internal class cultureToSend
         {
             [JsonProperty]
-            internal int lang;
+            internal int lang { get; set; }
             [JsonProperty]
-            internal int id;
+            internal int id { get; set; }
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
         }
     }
 }

@@ -6,6 +6,6 @@ namespace MealMate.Models
 {
     public partial class UserClaims : IdentityUserClaim<int>
     {
-        public virtual ApplicationUser User { get; set; }
+
     }
 }

@@ -92,21 +92,21 @@ namespace MealMate.Controllers
         internal class instrumnetToRead
         {
             [JsonProperty]
-            internal int language;
+            internal int language { get; set; }
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
             [JsonProperty]
-            internal string descShort;
+            internal string descShort { get; set; }
             [JsonProperty]
-            internal string descLong;
+            internal string descLong { get; set; }
         }
 
         internal class instrumentNames
         {
             [JsonProperty]
-            internal int id;
+            internal int id { get; set; }
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using MealMate.Models;
 using Action = MealMate.Models.Action;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MealMate.Data
 {
@@ -86,27 +87,27 @@ namespace MealMate.Data
                 .HasColumnName("created_at")
                 .HasDefaultValueSql("(getDate())");
             });
-            modelBuilder.Entity<UserClaims>(entity =>
+            modelBuilder.Entity<IdentityUserClaim<int>>(entity =>
             {
                 entity.ToTable("UserClaims");
             });
-            modelBuilder.Entity<UserTokens>(entity =>
+            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
             {
                 entity.ToTable("UserTokens");
             });
-            modelBuilder.Entity<UserLogins>(entity =>
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
             {
                 entity.ToTable("UserLogins");
             });
-            modelBuilder.Entity<UserRoles>(entity =>
+            modelBuilder.Entity<IdentityUserRole<string>>(entity =>
             {
                 entity.ToTable("UserRoles");
             });
-            modelBuilder.Entity<Roles>(entity =>
+            modelBuilder.Entity<IdentityRole<string>>(entity =>
             {
                 entity.ToTable("Roles");
             });
-            modelBuilder.Entity<RoleClaims>(entity =>
+            modelBuilder.Entity<IdentityRoleClaim<int>>(entity =>
             {
                 entity.ToTable("RoleClaims");
             });

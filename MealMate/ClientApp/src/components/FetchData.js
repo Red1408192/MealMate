@@ -27,9 +27,9 @@ export class FetchData extends Component {
         <tbody>
           {forecasts.map(forecast =>
             <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
+              <td>{forecast.ingredientId}</td>
+              <td>{forecast.name}</td>
+              <td>{forecast.parentId}</td>
               <td>{forecast.summary}</td>
             </tr>
           )}
@@ -54,7 +54,7 @@ export class FetchData extends Component {
 
   async populateWeatherData() {
     const token = await authService.getAccessToken();
-    const response = await fetch('weatherforecast', {
+    const response = await fetch('Ingredient/Get/1/1', {
       headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
     });
     const data = await response.json();

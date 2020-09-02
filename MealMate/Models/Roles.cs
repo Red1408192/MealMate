@@ -5,15 +5,8 @@ using System.Collections.Generic;
 
 namespace MealMate.Models
 {
-    public partial class Roles : IdentityRole
+    public partial class Roles : IdentityRole<string>
     {
-        public Roles()
-        {
-            RoleClaims = new HashSet<RoleClaims>();
-            UserRoles = new HashSet<UserRoles>();
-        }
 
-        public virtual ICollection<RoleClaims> RoleClaims { get; set; }
-        public virtual ICollection<UserRoles> UserRoles { get; set; }
     }
 }

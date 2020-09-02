@@ -6,6 +6,6 @@ namespace MealMate.Models
 {
     public partial class UserLogins : IdentityUserLogin<string>
     {
-        public virtual ApplicationUser User { get; set; }
+
     }
 }

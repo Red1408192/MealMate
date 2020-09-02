@@ -111,23 +111,23 @@ namespace MealMate.Controllers
         internal class DeseaseToRead
         {
             [JsonProperty]
-            internal int lang;
+            internal int lang { get; set; }
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
             [JsonProperty]
-            internal IEnumerable<int> ingres;
+            internal IEnumerable<int> ingres { get; set; }
             [JsonProperty]
-            internal IEnumerable<int> flags;
+            internal IEnumerable<int> flags { get; set; }
         }
 
         internal class DeseaseToSent
         {
             [JsonProperty]
-            internal string name;
+            internal string name { get; set; }
             [JsonProperty]
-            internal IEnumerable<int> ingres;
+            internal IEnumerable<int> ingres { get; set; }
             [JsonProperty]
-            internal IEnumerable<int> flags;
+            internal IEnumerable<int> flags { get; set; }
         }
     }
 }
