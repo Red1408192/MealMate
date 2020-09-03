@@ -47,6 +47,7 @@ namespace MealMate.Controllers
         [Route("[action]/{lang:int}")]
         public string Get(int lang)
         {
+            var i = this.Request.Body.ToString();
             var user = this.User.Claims.ToList()[5].Value;
 
             IEnumerable<PantryOvercard> Currentpantry = context.Pantry.Where(a => a.UserId == user).FirstOrDefault().PantryOvercard;
