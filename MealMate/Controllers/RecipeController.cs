@@ -135,6 +135,7 @@ namespace MealMate.Controllers
             return JsonConvert.SerializeObject(results, Formatting.Indented);
         }
 
+        //internal models
         internal class recipeFull
         {
             [JsonProperty]

@@ -15,6 +15,6 @@ namespace MealMate.Controllers
     [Route("[controller]")]
     public class UserDataController : ControllerBase
     {
-
+        
     }
 }
