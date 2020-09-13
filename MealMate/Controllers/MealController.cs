@@ -30,56 +30,40 @@ namespace MealMate.Controllers
             Parameter parameter = JsonConvert.DeserializeObject<Parameter>(request.ToString());
             parameter.Normalize();
 
+            List<Flag> flagBL = new List<Flag>();
+            List<Ingredient> ingredientsBL = new List<Ingredient>();
+            IEnumerable<Recipe> recipes1;
+
+
             if (parameter.famBlackList)
             {
-                IEnumerable<UserFamily> family = context
-                    .UserFamily.Where(a => a.UserId == user)
-                    .Where(a => parameter.familyMembers
-                    .Contains(a.FamilyMember));
+                FamilyIntollerances intollerances = new FamilyIntollerances(user);
 
-                IEnumerable<Flag> flagList = context.Flag
-                    .Where(b => context
-                    .UserFamilyDietFlag
-                    .Where(a => family
-                    .Contains(a.FamilyMember))
-                    .Select(c => c.FlagId)
-                    .Contains(b.FlagId));
-
-                IEnumerable<Ingredient> ingredientList = context.Ingredient
-                    .Where(b => context
-                    .UserFamilyDietIngr
-                    .Where(a => family
-                    .Contains(a.FamilyMember))
-                    .Select(c => c.IngredientId)
-                    .Contains(b.IngredientId));
-
-                IEnumerable<Desease> deseases = context.Desease
-                    .Where(b => context
-                    .UserFamilyDesease
-                    .Where(a => family
-                    .Contains(a.UserFamilyMember))
-                    .Select(c => c.DeseaseId)
-                    .Contains(b.DeseaseId));
-
-                IEnumerable<Diet> diet = context.Diet
-                    .Where(b => context
-                    .UserFamilyDiet
-                    .Where(a => family
-                    .Contains(a.UserFamilyMember))
-                    .Select(c => c.DietId)
-                    .Contains(b.DietId));
-
-                IEnumerable<Flag> flagList2 = context.DeseaseFlagBlacklist.Where(b => deseases.ToList().Contains(b.Desease)).Select(c => c.Flag);
-                IEnumerable<Ingredient> ingredientList2 = context.DeseaseIngredientBlacklist.Where(b => deseases.ToList().Contains(b.Desease)).Select(c => c.Ingredient);
-
-                IEnumerable<Flag> flagList3 = context.DietFlagBlacklist.Where(b => diet.ToList().Contains(b.Diet)).Select(c => c.Flag);
-                IEnumerable<Ingredient> ingredientList3 = context.DietIngredientBlacklist.Where(b => diet.ToList().Contains(b.Diet)).Select(c => c.Ingredient);
-
-
+                flagBL = intollerances.GenerateFlags(parameter.familyMembers);
+                ingredientsBL = intollerances.GenerateIngredients(parameter.familyMembers);
+                
+                recipes1 = context.Recipe
+                                    .Where(t => context.RecipeFlag
+                                        .Where(c => !flagBL
+                                        .Select(b => b.FlagId)
+                                        .Contains(c.FlagId))
+                                    .Select(r => r.RecipeId)
+                                    .Contains(t.RecipeId)
+                                    && 
+                                    context.RecipeSimpleIngredients
+                                        .Where(c => !flagBL
+                                        .Select(b => b.FlagId)
+                                        .Contains(c.IngredientId))
+                                    .Select(r => r.RecipeId)
+                                    .Contains(t.RecipeId));
             }
 
-
-            context.Recipe.Where();
+            if (parameter.usePantryLimits)
+            {
+                context.Ingredient.Where(a => context
+                .PantryIngredient
+                .Where(b => b.))
+            }
 
             return "none";
         }
