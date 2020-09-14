@@ -14,6 +14,11 @@ namespace MealMate.Controllers
     {
         MealMateNewContext context;
 
+        public ProducerController(MealMateNewContext _context)
+        {
+            context = _context;
+        }
+
         [HttpPost]
         [Route("[action]")]
         public void Post([FromBody] object request)

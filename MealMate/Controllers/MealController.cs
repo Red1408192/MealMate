@@ -57,12 +57,15 @@ namespace MealMate.Controllers
                                     .Select(r => r.RecipeId)
                                     .Contains(t.RecipeId));
             }
-
+            else{
+                recipes1 = context.Recipe.ToList();
+            }
+            
             if (parameter.usePantryLimits)
             {
-                context.Ingredient.Where(a => context
-                .PantryIngredient
-                .Where(b => b.))
+                PantryIngredients pantryIngredients = new PantryIngredients(user);
+                List<KeyValuePair<Ingredient, double>> pantryLimits = pantryIngredients.GenerateIngredients();
+
             }
 
             return "none";
