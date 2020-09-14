@@ -58,7 +58,7 @@ namespace MealMate.Controllers
                                     .Contains(t.RecipeId));
             }
             else{
-                recipes1 = context.Recipe.ToList();
+                recipes1 = context.Recipe.AsQueryable();
             }
             
             if (parameter.usePantryLimits)
@@ -66,9 +66,16 @@ namespace MealMate.Controllers
                 PantryIngredients pantryIngredients = new PantryIngredients(user);
                 List<KeyValuePair<Ingredient, double>> pantryLimits = pantryIngredients.GenerateIngredients();
 
+                PantryComparer comparer = new PantryComparer(pantryLimits);
+                recipes1 = recipes1.Where(a => comparer
+                                    .Compare(
+                                context.RecipeSimpleIngredients
+                                .Where(b => b.RecipeId == a.RecipeId)
+                                .Select(d => new KeyValuePair<Ingredient, double>
+                                (d.Ingredient, d.Quantity))));
             }
 
-            return "none";
+            return JsonConvert.SerializeObject(recipes1, Formatting.Indented);
         }
         //internal-models
         internal class BlackList
