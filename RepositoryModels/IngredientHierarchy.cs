@@ -1,4 +1,4 @@
-﻿namespace ControllerModels
+﻿namespace RepositoryModels
 {
     public class IngredientHierarchy
     {

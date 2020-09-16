@@ -1,7 +1,7 @@
 ﻿using RepositoryModels;
 using System.Collections.Generic;
 
-namespace Comì.Repositories
+namespace RepositoryModels
 {
     public interface IRecipesRepository
     {

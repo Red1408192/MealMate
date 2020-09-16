@@ -1,4 +1,4 @@
-﻿namespace Comì.Controllers
+﻿namespace ControllerModels
 {
     public class FamMemberToPost
     {

@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace Comì.Repositories
 {
-    public class RecipesRepository : IRecipesRepository
+    public class RecipeRepository : IRecipesRepository
     {
 
     }
