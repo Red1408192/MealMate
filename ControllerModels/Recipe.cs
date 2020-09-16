@@ -2,7 +2,8 @@
 
 namespace ControllerModels
 {
-    public class Class1
+    public class Recipe
     {
+        //TO DO
     }
 }
