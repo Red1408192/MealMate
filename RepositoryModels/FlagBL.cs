@@ -6,6 +6,8 @@ namespace RepositoryModels
 {
     public class FlagBL : IBlackListed
     {
+        public int id => throw new NotImplementedException();
 
+        public string name => throw new NotImplementedException();
     }
 }

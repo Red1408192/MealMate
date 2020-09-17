@@ -2,7 +2,7 @@
 {
     public interface IBlackListed
     {
-        int Id { get; }
+        int id { get; }
         string name { get; }
     }
 }

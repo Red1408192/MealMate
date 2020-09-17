@@ -13,6 +13,34 @@ namespace Comì.Repositories
 {
     public class IngredientReposity : IIngredientReposity
     {
+        public Ingredient Get(int id)
+        {
+            throw new NotImplementedException();
+        }
 
+        public IEnumerable<Ingredient> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IngredientFull GetFullIngredient(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IngredientDetail GetMultiProperties(IEnumerable<int> IngredientsIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IngredientNames> GetNamesList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IngredientDetail GetProperties(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

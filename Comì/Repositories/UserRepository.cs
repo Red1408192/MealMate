@@ -12,6 +12,24 @@ namespace Comì.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        public AccountSettings GetAccountSettings(string id)
+        {
+            throw new NotImplementedException();
+        }
 
+        public FamilyMember GetFamilyMember(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<FamilyMember> GetFamilyMembers(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User GetUser(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

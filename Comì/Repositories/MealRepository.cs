@@ -12,6 +12,34 @@ namespace Comì.Repositories
 {
     public class MealRepository : IMealRepository
     {
+        public void AddRecipe(int id)
+        {
+            throw new NotImplementedException();
+        }
 
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Meal Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<RecipeInMeals> GetRecipeList(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveRecipe(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateRecipeQuantity(int id, double quantity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
