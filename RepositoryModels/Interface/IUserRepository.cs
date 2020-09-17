@@ -9,6 +9,6 @@ namespace RepositoryModels
         User GetUser(string id);
         FamilyMember GetFamilyMember(string id);
         IEnumerable<FamilyMember> GetFamilyMembers(string id);
-
+        AccountSettings GetAccountSettings(string id);
     }
 }
