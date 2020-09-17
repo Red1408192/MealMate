@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ControllerModels;
 
-namespace Comì.Controllers
+namespace ControllerModels
 {
     public interface IFamilyController
     {

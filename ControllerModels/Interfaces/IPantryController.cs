@@ -1,7 +1,7 @@
 ﻿using ControllerModels;
 using System.Collections.Generic;
 
-namespace Comì.Controllers
+namespace ControllerModels
 {
     public interface IPantryController
     {
