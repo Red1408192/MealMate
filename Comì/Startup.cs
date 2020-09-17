@@ -11,13 +11,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace Comì
 {
+//      “Victory is for those who can say 'Victory is mine'.
+//          Success is for those who can begin saying 'I will succeed'
+//              and then say 'I have succeeded' in the very end.”
+//                  - Atatürk
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "FrontEnd/build";
@@ -26,7 +27,6 @@ namespace Comì
             services.AddRazorPages();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
