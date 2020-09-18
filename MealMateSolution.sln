@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerModels", "Control
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModels", "DataModels\DataModels.csproj", "{F54FEDA0-6680-4548-BE8A-053A6D347220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComìMain", "ComìMain\ComìMain.csproj", "{D9FFF602-7B7C-435B-87EB-66166334F22F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComìMain", "ComìMain\ComìMain.csproj", "{D9FFF602-7B7C-435B-87EB-66166334F22F}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MealMateDBClone", "MealMateDBClone\MealMateDBClone.sqlproj", "{ECE5FD44-3710-4512-BEBC-DEFA636C7252}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{D9FFF602-7B7C-435B-87EB-66166334F22F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9FFF602-7B7C-435B-87EB-66166334F22F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9FFF602-7B7C-435B-87EB-66166334F22F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE5FD44-3710-4512-BEBC-DEFA636C7252}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

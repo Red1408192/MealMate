@@ -1,0 +1,3 @@
+﻿ALTER DATABASE [$(DatabaseName)]
+    ADD FILE (NAME = [MealMateNew], FILENAME = 'C:\Program Files\Microsoft SQL Server\MSSQL15.REDPC\MSSQL\DATA\MealMateNew.mdf', SIZE = 8192 KB, FILEGROWTH = 65536 KB) TO FILEGROUP [PRIMARY];
+
