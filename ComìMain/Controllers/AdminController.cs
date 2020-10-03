@@ -12,49 +12,55 @@ namespace ComìMain.Controllers
 {
     [Authorize]
     [Route("[controller]")]
-    public class PantryController : ControllerBase, IPantryController
+    public class AdminController : ControllerBase, IAdminController
     {
         [HttpPost]
         [Route("[action]")]
-        public void AddIngredientToPantry(int ingredient, string overcard)
+        public void PostDesease(DeseaseToPost deseaseToPost)
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
-        public IEnumerable<OverCard> GetCurrentPanty(int lang)
+        public void PostDiet(DietToPost dietToPost)
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
-        public IngredientToSent GetIngredientDetail(int id, int lang)
+        public void PostIngredient(IngredientToPost ingredientToPost)
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
-        public IEnumerable<int> GetIngredientList(SearchRecPar searchPar, int lang)
+        public void PostInstrument(InstrumentToPost instrumentToPost)
         {
             throw new NotImplementedException();
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("[action]")]
-        public void RemoveIngredientFromPantry(int ingredient, string overcard)
+        public void PostProducer(ProducerToPost producerToPost)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public void PostRecipe(RecipeSimpleToPost recipeSimpleToPost)
         {
             throw new NotImplementedException();
         }
 
         [HttpPatch]
         [Route("[action]")]
-        public void UpdateQuanityOfIngredient(int ingredient, double newQuantity)
+        public void UpdateTransaltion(Translation translation)
         {
             throw new NotImplementedException();
         }
     }
 }
-
